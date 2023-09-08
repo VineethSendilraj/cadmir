@@ -14,9 +14,8 @@ dotenv.config();
 const client = new PineconeClient();
 
 
-export async function GET(req: Request) {
-    const {prompt} = await req.json();
-
+export async function GET(req: Request,{ params }: { params: { searchtext: string } }) {
+    const searchtext = params.searchtext;
     await client.init({
         apiKey: process.env.PINECONE_API_KEY!,
         environment: process.env.PINECONE_ENV!,
@@ -24,9 +23,11 @@ export async function GET(req: Request) {
     const pineconeIndex = await client.Index("cadmir");
     const vectorStore = await PineconeStore.fromExistingIndex(
         new OpenAIEmbeddings(),
-        { pineconeIndex }
+        { pineconeIndex, namespace:"cad1"}
     );
-    const docs = await vectorStore.similaritySearch(prompt, 10)
+    const docs = await vectorStore.similaritySearch(searchtext, 10)
+    console.log("search text", searchtext)
+    console.log("got req for sources, ", JSON.stringify(docs) )
 
-    return new Response(JSON.stringify(docs.map((doc)=>{doc.metadata})), {headers: {"content-type": "application/json"}})
+    return new Response(JSON.stringify(docs), {headers: {"content-type": "application/json"}})
 }

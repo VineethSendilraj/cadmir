@@ -24,9 +24,10 @@ export async function POST(req: Request) {
     const pineconeIndex = await client.Index("cadmir");
     const vectorStore = await PineconeStore.fromExistingIndex(
         new OpenAIEmbeddings(),
-        { pineconeIndex }
-    );
+        { pineconeIndex, namespace:"cad1"}
+        );
     const docs = await vectorStore.similaritySearch(prompt, 10)
+    console.log("docs from search route: ", docs)
 
     const { stream, handlers, writer } = LangChainStream();
 
