@@ -8,7 +8,7 @@ import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import { useState } from "react";
 import useSWR from "swr";
 
-export function useSource(doi: string) {
+function useSource(doi: string) {
   const fetcher = (url: string) => fetch(url).then((res) => res.json());
   const { data, error } = useSWR(
     "https://api.unpaywall.org/v2/" + doi + "?email=ryandu9221@gmail.com",
@@ -136,7 +136,10 @@ function Source({ doi }: { doi: string }) {
           </Link>
           <div className="text-gray-600">
             {data.z_authors.map(
-              (author, index) =>
+              (
+                author: { given: string[] | undefined; family: string },
+                index: any
+              ) =>
                 author.given != undefined &&
                 author.given[0] +
                   ". " +
