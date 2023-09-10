@@ -32,7 +32,7 @@ export async function POST(req: Request) {
     const { stream, handlers, writer } = LangChainStream();
 
 
-    const model = new OpenAI({streaming: true});
+    const model = new OpenAI({streaming: true, maxTokens: 700});
     const chain = loadQAStuffChain(model);
 
     chain
@@ -43,3 +43,4 @@ export async function POST(req: Request) {
 
     return new StreamingTextResponse(stream, );
 }
+
