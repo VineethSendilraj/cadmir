@@ -28,9 +28,13 @@ function removeDuplicates(arr: any) {
 
 export default function Home() {
   const [searchtext, setsearchtext] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const handleSeach = async () => {
     if (searchtext != "") {
+      setError("");
       try {
+        setLoading(true);
         await complete(
           searchtext +
             " Write a 2 - 3 paragraph long response that answers the question specifically with examples, evidence, and details."
@@ -46,9 +50,13 @@ export default function Home() {
         console.log("source: ", sources);
         console.log("filtered sources, ", filteredSources);
         setSources(filteredSources);
+        setLoading(false);
       } catch (error) {
         console.error("Error during completion:", error);
+        setLoading(false);
       }
+    } else {
+      setError("Please enter a search query");
     }
   };
   const { complete, completion } = useCompletion({
@@ -102,6 +110,20 @@ export default function Home() {
             />
           </button>
         </div>
+
+        {error != "" && <div className="text-red-600 text-lg">{error}</div>}
+
+        {loading && completion == "" && (
+          <>
+            <div
+              className="animate-spin inline-block w-8 h-8 border-[2px] border-current border-t-transparent text-indigo-600 rounded-full mt-16"
+              role="status"
+              aria-label="loading"
+            >
+              <span className="sr-only">Loading...</span>
+            </div>
+          </>
+        )}
 
         {completion != "" && completion != undefined && (
           <div className="max-w-3xl my-10 border-[1px] border-gray-200 bg-gray-50 rounded-3xl p-8">
